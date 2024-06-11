@@ -82,7 +82,8 @@ export async function register(req, res) {
 /** POST: http://localhost:8000/api/login 
  * @param: {
   "username" : "example123",
-  "password" : "admin123"
+  "password" : "admin123"qwertyuiocv
+  
 }
 */
 export async function login(req, res) {

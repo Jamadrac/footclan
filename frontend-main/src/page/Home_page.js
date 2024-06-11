@@ -6,13 +6,7 @@ import Pricing from "./Pricing";
 
 const Home_page = () => {
   return (
-    <>
-      <Hero />
-      <Metrics />
-      <C_T_A_section />
-      <Trusted_companies />
-      <Pricing />
-    </>
+   
   );
 };
 
