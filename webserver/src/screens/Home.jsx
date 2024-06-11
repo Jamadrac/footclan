@@ -5,7 +5,7 @@ import Hero from "./Homex/Hero";
 import Trusted_companies from "./Homex/Trusted_companies";
 import Pricing from "./Homex/Pricingh";
 
-const LoginScreen = () => {
+const Home = () => {
   return (
     <div>
       <>
