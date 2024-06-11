@@ -1,7 +1,9 @@
 import React, { useState } from "react";
 import { useSetRecoilState } from "recoil";
 import { useNavigate } from "react-router-dom";
+import axios from "axios";
 import { userState, isAuthenticatedState } from "../recoil/atoms";
+import config from "../../config";
 
 const LoginScreen = () => {
   const [username, setUsername] = useState("");
@@ -13,16 +15,13 @@ const LoginScreen = () => {
   const handleLogin = async (e) => {
     e.preventDefault();
     try {
-      const response = await fetch("http://localhost:8000/api/login", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ username, password }),
+      const response = await axios.post(`${config.baseURL}/api/login`, {
+        username,
+        password,
       });
 
-      const data = await response.json();
-      if (response.ok) {
+      const data = response.data;
+      if (response.status === 200) {
         setUser({
           id: data.id,
           username: data.username,
@@ -34,7 +33,7 @@ const LoginScreen = () => {
           token: data.token,
         });
         setIsAuthenticated(true);
-        navigate("/home");
+        navigate("/homeP");
       } else {
         console.error("Login failed:", data.error);
       }
