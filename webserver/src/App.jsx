@@ -12,10 +12,13 @@ function App() {
     <RecoilRoot>
       <Router>
         <Routes>
-          {/* <ProtectedRoute path="/profile" element={<HomeScreen />} /> */}
           <Route path="/login" element={<LoginScreen />} />
           <Route path="/register" element={<Signup />} />
           <Route path="/" element={<Home />} />
+          <Route
+            path="/profile"
+            element={<ProtectedRoute element={<HomeScreen />} />}
+          />
         </Routes>
       </Router>
     </RecoilRoot>

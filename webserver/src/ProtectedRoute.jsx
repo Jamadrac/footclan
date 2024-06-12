@@ -1,18 +1,13 @@
+// src/ProtectedRoute.jsx
 import React from "react";
-import { Route, Navigate } from "react-router-dom";
+import { Navigate } from "react-router-dom";
 import { useRecoilValue } from "recoil";
 import { isAuthenticatedState } from "./recoil/atoms";
 
-const ProtectedRoute = ({ element: Component, ...rest }) => {
+const ProtectedRoute = ({ element }) => {
   const isAuthenticated = useRecoilValue(isAuthenticatedState);
 
-  const routeElement = isAuthenticated ? (
-    <Component />
-  ) : (
-    <Navigate to="/login" replace />
-  );
-
-  return <Route {...rest} element={routeElement} />;
+  return isAuthenticated ? element : <Navigate to="/login" />;
 };
 
 export default ProtectedRoute;
