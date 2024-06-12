@@ -25,6 +25,7 @@ const LoginScreen = () => {
         setUser({
           id: data.id,
           username: data.username,
+
           firstName: data.firstName,
           lastName: data.lastName,
           mobile: data.mobile,
