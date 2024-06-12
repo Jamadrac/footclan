@@ -33,7 +33,7 @@ const LoginScreen = () => {
           token: data.token,
         });
         setIsAuthenticated(true);
-        navigate("/homeP");
+        navigate("/profile");
       } else {
         console.error("Login failed:", data.error);
       }
