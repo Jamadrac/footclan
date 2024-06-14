@@ -23,6 +23,7 @@ export const userState = atom({
     username: "",
     firstName: "",
     lastName: "",
+    email: "",
     mobile: "",
     address: "",
     profile: "",
