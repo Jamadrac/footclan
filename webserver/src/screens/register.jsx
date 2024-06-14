@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import axios from "axios";
+import api from "../../config";
 
 const Signup = () => {
   const [userData, setUserData] = useState({
@@ -10,7 +11,7 @@ const Signup = () => {
     lastName: "",
     mobile: "",
     address: "",
-    profile: "", // Leaving profile blank
+    profile: "",
   });
   const [error, setError] = useState("");
 
@@ -27,7 +28,7 @@ const Signup = () => {
 
     try {
       const response = await axios.post(
-        "http://localhost:8000/api/register",
+        `${api.baseURL}/api/register`,
         userData
       );
 

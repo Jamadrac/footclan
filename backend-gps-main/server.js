@@ -6,11 +6,20 @@ import router from "./router/route.js";
 
 const app = express();
 
-/** middlewares */
+/** Middlewares */
 app.use(express.json());
+app.use(
+  cors({
+    origin: "http://localhost:5173", // Frontend origin
+    methods: ["GET", "POST", "PUT", "DELETE"],
+    allowedHeaders: ["Content-Type", "Authorization"],
+    credentials: true,
+    optionsSuccessStatus: 200, // Some legacy browsers choke on 204
+  })
+);
 app.options("*", cors());
 app.use(morgan("tiny"));
-app.disable("x-powered-by"); // less hackers know about our stack
+app.disable("x-powered-by"); // Less hackers know about our stack
 
 const port = 8000;
 
@@ -19,7 +28,7 @@ app.get("/", (req, res) => {
   res.status(201).json("Home GET Request");
 });
 
-/** api routes */
+/** API routes */
 app.use("/api", router);
 
 // Start the server
@@ -31,7 +40,7 @@ const server = app.listen(port, () => {
   });
 });
 
-// i dont care anymore
+// Error handling for the server
 server.on("error", (error) => {
   console.error("Error starting the server:", error);
 });
