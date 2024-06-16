@@ -1,35 +1,31 @@
 import React from "react";
-import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import { RecoilRoot } from "recoil";
 import ProtectedRoute from "./ProtectedRoute";
 import LoginScreen from "./screens/LoginScreen";
 import Profile from "./screens/Profile";
-import MapScreen from "./screens/Map.jsx";
+import MapScreen from "./screens/Map";
 import Home from "./screens/Home";
 import Signup from "./screens/register";
+
+const router = createBrowserRouter([
+  { path: "/login", element: <LoginScreen /> },
+  { path: "/register", element: <Signup /> },
+  { path: "/", element: <Home /> },
+  {
+    path: "/profile",
+    element: <ProtectedRoute element={<Profile />} />,
+  },
+  {
+    path: "/map",
+    element: <ProtectedRoute element={<MapScreen />} />,
+  },
+]);
 
 function App() {
   return (
     <RecoilRoot>
-      <Router>
-        <Routes>
-          <Route path="/login" element={<LoginScreen />} />
-          <Route path="/register" element={<Signup />} />
-          <Route path="/" element={<Home />} />
-          <Route
-            path="/profile"
-            element={<ProtectedRoute element={<Profile />} />}
-          />
-          <Route
-            path="/map"
-            element={<ProtectedRoute element={<MapScreen />} />}
-          />
-          {/* <Route
-            path="/profile"
-            element={<ProtectedRoute element={<HomeScreen />} />}
-          /> */}
-        </Routes>
-      </Router>
+      <RouterProvider router={router} />
     </RecoilRoot>
   );
 }
