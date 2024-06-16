@@ -28,7 +28,7 @@ const Navbar = () => {
           />
         </Link>
         <div className=" font-extrabold ring-offset-yellow-300 text-3xl">
-          WEBMARK
+          WEBMARK maps
         </div>
 
         {user ? (
