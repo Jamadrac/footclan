@@ -6,7 +6,6 @@ import { motion } from "framer-motion";
 
 const Navbar = () => {
   const [open, setOpen] = useState(false);
-  // const { user, logoutUser } = useContext(AuthContext);
   const { user, logoutUser } = useContext;
 
   return (
@@ -22,14 +21,15 @@ const Navbar = () => {
           to={"/"}
           className="w-10 h-10 rounded-full group border-4 border-indigo-600"
         >
-        
           <img
             src={webmarck}
             alt="Webmarck Logo"
             className="object-cover rounded-full group-hover:scale-105 transition-all"
           />
         </Link>
-        <div className=" font-extrabold ring-offset-yellow-300 text-3xl">WEBMARK</div>
+        <div className=" font-extrabold ring-offset-yellow-300 text-3xl">
+          WEBMARK
+        </div>
 
         {user ? (
           // User is authenticated, display username
@@ -81,7 +81,7 @@ const Navbar = () => {
           {/* Access account button */}
           <div className="transition-all duration-300">
             <a
-              href="/Profile"
+              href="/profile"
               className="bg-indigo-600 hover:text-gray-200 active:scale-95 transition-all text-white py-2 px-3 rounded-2xl"
             >
               Access your account
@@ -125,26 +125,30 @@ const Navbar = () => {
         </div>
         {/* Mobile Menu Content */}
         <motion.div
-          animate={
-            open
-              ? { opacity: 1,y:0}
-              : { opacity:0,y:"100%"}
-          }
+          animate={open ? { opacity: 1, y: 0 } : { opacity: 0, y: "100%" }}
           transition={{ duration: 0.1, delay: 0.2 }}
           className="md:hidden absolute top-[100%] bg-black bg-opacity-80 backdrop-blur-lg right-0 w-full text-center"
         >
           <ul className="text-white py-16 grid text-lg gap-3">
             <li>
-              <a href="/" className=" hover:text-indigo-400">Services</a>
+              <a href="/" className=" hover:text-indigo-400">
+                Services
+              </a>
             </li>
             <li>
-              <a href="/pricing" className=" hover:text-indigo-400">Pricing</a>
+              <a href="/pricing" className=" hover:text-indigo-400">
+                Pricing
+              </a>
             </li>
             <li>
-              <a href="/about" className=" hover:text-indigo-400">About Us</a>
+              <a href="/about" className=" hover:text-indigo-400">
+                About Us
+              </a>
             </li>
             <li>
-              <a href="/" className=" hover:text-indigo-400">Help</a>
+              <a href="/" className=" hover:text-indigo-400">
+                Help
+              </a>
             </li>
             {user ? (
               <li>
