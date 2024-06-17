@@ -9,13 +9,13 @@ const app = express();
 /** Middlewares */
 app.use(express.json());
 app.use(
-  cors({
+
     origin: "http://localhost:5173", // Frontend origin
     methods: ["GET", "POST", "PUT", "DELETE"],
     allowedHeaders: ["Content-Type", "Authorization"],
     credentials: true,
     optionsSuccessStatus: 200, // Some legacy browsers choke on 204
-  })
+  
 );
 app.options("*", cors());
 app.use(morgan("tiny"));
