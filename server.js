@@ -6,13 +6,6 @@ import cors from "cors";
 
 const app = express();
 
-const corsOptions = {
-  origin: "*", // Allow requests from all origins
-  method: "*",
-  allowedHeaders: "*",
-  // credentials: true,
-};
-
 app.use(cors());
 
 // app.use((req, res, next) => {
