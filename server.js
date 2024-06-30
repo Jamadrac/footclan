@@ -5,10 +5,9 @@ import connect from "./database/conn.js";
 import router from "./router/route.js";
 
 const app = express();
-const cors = require("cors");
+
 // Middleware
 
-const cors = require("cors");
 const corsOptions = {
   origin: "http://localhost:3000",
   credentials: true, //access-control-allow-credentials:true
@@ -24,7 +23,7 @@ const port = 8000;
 
 // Basic GET route
 app.get("/", (req, res) => {
-  res.status(200).json("Welcome to the API"); // Changed status to 200 and message
+  res.status(200).json("Welcome to the cors"); // Changed status to 200 and message
 });
 
 // API routes
