@@ -23,7 +23,6 @@ app.get("/", (req, res) => {
 app.use("/api", router);
 
 // Start the server
-
 const server = app.listen(port, () => {
   console.log(`Server connected to http://localhost:${port}`);
 
