@@ -8,7 +8,9 @@ const app = express();
 
 const corsOptions = {
   origin: "*", // Allow requests from all origins
-  credentials: true,
+  method: "*",
+  allowedHeaders: "*",
+  // credentials: true,
 };
 
 app.use(cors(corsOptions));
