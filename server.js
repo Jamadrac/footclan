@@ -8,21 +8,24 @@ const app = express();
 
 // Middleware
 app.use(express.json()); // JSON parsing middleware
-app.use(cors()); // Enable CORS for all routes
+app.use(
+  cors({
+    origin: "http://localhost:5173",
+    methods: ["GET", "POST"],
+    allowedHeaders: ["Content-Type", "Authorization"],
+  })
+);
 // app.use(morgan("tiny")); // HTTP request logging
-
-// app.disable("x-powered-by"); // Hide server stack information
 
 const port = 8000;
 
 // Basic GET route
 app.get("/", (req, res) => {
-  res.status(200).json("Welcome to the API ccc"); // Changed status to 200 and message
+  res.status(200).json("Welcome to the API ddd"); // Changed status to 200 and message
 });
 
 // API routes
 app.use("/api", router);
-// dajdk
 
 // Start the server
 const server = app.listen(port, () => {
