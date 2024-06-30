@@ -18,7 +18,7 @@ const port = 8000;
 
 // Basic GET route
 app.get("/", (req, res) => {
-  res.status(200).json("Welcome to the CORS-enabled server");
+  res.status(200).json("Welcome to the CORS-77-enabled server");
 });
 
 // API routes
