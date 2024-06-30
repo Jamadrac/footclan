@@ -22,6 +22,7 @@ app.get("/", (req, res) => {
 
 // API routes
 app.use("/api", router);
+// dajdk
 
 // Start the server
 const server = app.listen(port, () => {
