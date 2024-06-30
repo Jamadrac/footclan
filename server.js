@@ -2,10 +2,16 @@ import express from "express";
 import morgan from "morgan";
 import connect from "./database/conn.js";
 import router from "./router/route.js";
+import cors from "cors";
 
 const app = express();
 
-// app.use(cors());
+const corsOptions = {
+  origin: "*", // Allow requests from all origins
+  credentials: true,
+};
+
+app.use(cors(corsOptions));
 
 app.use((req, res, next) => {
   res.header("Access-Control-Allow-Origin", "*");
