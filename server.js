@@ -17,13 +17,14 @@ app.use(cors(corsOptions));
 
 app.use((req, res, next) => {
   res.header("Access-Control-Allow-Origin", "*");
-  res.header("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS");
+  res.header("Access-Control-Allow-Methods", "*"); // Allow all HTTP methods
   res.header(
     "Access-Control-Allow-Headers",
     "Origin, X-Requested-With, Content-Type, Accept, Authorization"
   );
   next();
 });
+
 app.use(express.json());
 app.use(morgan("tiny"));
 
@@ -33,7 +34,7 @@ const port = 8000;
 
 // Basic GET route
 app.get("/", (req, res) => {
-  res.status(200).json("Welcome to the CORS-enabled 998888899 server");
+  res.status(200).json("the lord has brought it to me");
 });
 
 // API routes
