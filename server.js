@@ -1,27 +1,40 @@
 import express from "express";
 import cors from "cors";
+import morgan from "morgan";
+import connect from "./database/conn.js";
+import router from "./router/route.js";
 
 const app = express();
 
 // Middleware
 app.use(express.json()); // JSON parsing middleware
+app.use(cors()); // Enable CORS for all routes
+app.use(morgan("tiny")); // HTTP request logging
 
-// CORS configuration
-app.use(
-  cors({
-    origin: "http://localhost:5173",
-    methods: ["GET", "POST"],
-    allowedHeaders: ["Content-Type", "Authorization"],
-  })
-);
+app.disable("x-powered-by"); // Hide server stack information
 
-// Your other configurations and routes...
+const port = 8000;
 
-const port = process.env.PORT || 8000;
+// Basic GET route
+app.get("/", (req, res) => {
+  res.status(200).json("Welcome to the API"); // Changed status to 200 and message
+});
+
+// API routes
+app.use("/api", router);
 
 // Start the server
 const server = app.listen(port, () => {
   console.log(`Server running at http://localhost:${port}`);
+
+  connect()
+    .then(() => {
+      console.log("Connected to database");
+    })
+    .catch((error) => {
+      console.error("Error connecting to the database:", error);
+      process.exit(1); // Exit the process if unable to connect to the database
+    });
 });
 
 // Error handling for the server startup
