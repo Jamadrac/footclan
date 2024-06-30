@@ -17,8 +17,7 @@ const port = 8000;
 
 // Basic GET route
 app.get("/", (req, res) => {
-  res.status(200).json("Welcome to the API"); // Changed status to 200 and message
-});
+  res.status(200).json("Welcome to the API"); //
 
 // API routes
 app.use("/api", router);
