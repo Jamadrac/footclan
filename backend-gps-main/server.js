@@ -9,7 +9,7 @@ const app = express();
 /** middlewares */
 app.use(express.json());
 app.use(cors());
-app.use(morgan("tiny"));
+// app.use(morgan("tiny"));
 
 const port = 8000;
 
