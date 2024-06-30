@@ -7,15 +7,17 @@ import router from "./router/route.js";
 const app = express();
 
 // Middleware
-
 const corsOptions = {
-  origin: "http://localhost:5173",
-  credentials: true, // access-control-allow-credentials:true
+  origin: "*", // Allow all origins
+  methods: "GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS", // Allow all methods
+  allowedHeaders:
+    "Origin, X-Requested-With, Content-Type, Accept, Authorization, X-Auth-Token", // Allow all headers
+  credentials: true, // Allow cookies and credentials
   optionSuccessStatus: 200,
 };
 app.use(cors(corsOptions));
-app.use(express.json()); // JSON parsing middleware
-app.use(morgan("tiny")); // HTTP request logging
+app.use(express.json());
+app.use(morgan("tiny"));
 
 app.disable("x-powered-by");
 
@@ -23,7 +25,7 @@ const port = 8000;
 
 // Basic GET route
 app.get("/", (req, res) => {
-  res.status(200).json("Welcome to the CORS-enabled server"); // Changed status to 200 and message
+  res.status(200).json("Welcome to the CORS-enabled server");
 });
 
 // API routes
@@ -39,7 +41,7 @@ const server = app.listen(port, () => {
     })
     .catch((error) => {
       console.error("Error connecting to the database:", error);
-      process.exit(1); // Exit the process if unable to connect to the database
+      process.exit(1);
     });
 });
 
