@@ -12,7 +12,7 @@ const corsOptions = {
 };
 
 app.use(express.json());
-app.use(morgan("tiny")); // Specify the log format for morgan
+app.use(morgan());
 
 const port = 8000;
 
