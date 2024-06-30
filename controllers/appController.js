@@ -113,6 +113,7 @@ export async function login(req, res) {
               username: user.username,
               id: user._id,
               firstName: user.firstName,
+              email: user.email,
               lastName: user.lastName,
               mobile: user.mobile,
               address: user.address,
