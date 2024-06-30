@@ -27,7 +27,7 @@ const port = 8000;
 
 // Basic GET route
 app.get("/", (req, res) => {
-  res.status(200).json("the lord has brought it to me");
+  res.status(200).json("the lord has brought it to mexxx");
 });
 
 // API routes
