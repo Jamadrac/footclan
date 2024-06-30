@@ -1,23 +1,21 @@
 import express from "express";
-import cors from "cors";
 import morgan from "morgan";
 import connect from "./database/conn.js";
 import router from "./router/route.js";
-import allowCors from "./cors.js";
 
 const app = express();
 
-// Middleware
-// const corsOptions = {
-//   origin: "*", // Allow all origins
-//   methods: "GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS", // Allow all methods
-//   allowedHeaders:
-//     "Origin, X-Requested-With, Content-Type, Accept, Authorization, X-Auth-Token", // Allow all headers
-//   credentials: true, // Allow cookies and credentials
-//   optionSuccessStatus: 200,
-// };
-// app.use(cors(corsOptions));
-app.use(cors());
+// app.use(cors());
+
+app.use((req, res, next) => {
+  res.header("Access-Control-Allow-Origin", "*");
+  res.header("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS");
+  res.header(
+    "Access-Control-Allow-Headers",
+    "Origin, X-Requested-With, Content-Type, Accept, Authorization"
+  );
+  next();
+});
 app.use(express.json());
 app.use(morgan("tiny"));
 
@@ -27,7 +25,7 @@ const port = 8000;
 
 // Basic GET route
 app.get("/", (req, res) => {
-  res.status(200).json("Welcome to the CORS-enabled 998888899 server");
+  res.status(200).json("Welcome to the CORS-enabled 9hhhhhhhhhhhhhh server");
 });
 
 // API routes
