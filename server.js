@@ -1,13 +1,12 @@
 import express from "express";
 import cors from "cors";
-import morgan from "morgan";
-import connect from "./database/conn.js";
-import router from "./router/route.js";
 
 const app = express();
 
 // Middleware
 app.use(express.json()); // JSON parsing middleware
+
+// CORS configuration
 app.use(
   cors({
     origin: "http://localhost:5173",
@@ -15,30 +14,14 @@ app.use(
     allowedHeaders: ["Content-Type", "Authorization"],
   })
 );
-// app.use(morgan("tiny")); // HTTP request logging
 
-const port = 8000;
+// Your other configurations and routes...
 
-// Basic GET route
-app.get("/", (req, res) => {
-  res.status(200).json("Welcome to the API ddd"); // Changed status to 200 and message
-});
-
-// API routes
-app.use("/api", router);
+const port = process.env.PORT || 8000;
 
 // Start the server
 const server = app.listen(port, () => {
   console.log(`Server running at http://localhost:${port}`);
-
-  connect()
-    .then(() => {
-      console.log("Connected to database");
-    })
-    .catch((error) => {
-      console.error("Error connecting to the database:", error);
-      process.exit(1); // Exit the process if unable to connect to the database
-    });
 });
 
 // Error handling for the server startup
