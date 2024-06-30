@@ -17,7 +17,7 @@ const app = express();
 //   optionSuccessStatus: 200,
 // };
 // app.use(cors(corsOptions));
-app.use(cors(allowCors));
+app.use(cors());
 app.use(express.json());
 app.use(morgan("tiny"));
 
