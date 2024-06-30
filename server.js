@@ -5,10 +5,17 @@ import connect from "./database/conn.js";
 import router from "./router/route.js";
 
 const app = express();
-
+const cors = require("cors");
 // Middleware
+
+const cors = require("cors");
+const corsOptions = {
+  origin: "http://localhost:3000",
+  credentials: true, //access-control-allow-credentials:true
+  optionSuccessStatus: 200,
+};
+app.use(cors(corsOptions));
 app.use(express.json()); // JSON parsing middleware
-app.use(cors()); // Enable CORS for all routes
 app.use(morgan("tiny")); // HTTP request logging
 
 app.disable("x-powered-by"); // Hide server stack information
