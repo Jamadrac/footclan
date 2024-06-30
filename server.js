@@ -1,37 +1,24 @@
 import express from "express";
 import morgan from "morgan";
-import cors from "./cors.js";
 import connect from "./database/conn.js";
 import router from "./router/route.js";
+import cors from "./cors.js";
 
-const app = express();
+export const app = express();
 
-// app.use(cors());
-const corsOptions: cors.CorsOptions = {
-  origin: "*", // Allow requests from all origins
+const corsOptions = {
+  origin: "*",
   credentials: true,
 };
 
-app.use(cors(corsOptions));
-app.use((req, res, next) => {
-  res.header("Access-Control-Allow-Origin", "*");
-  res.header("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS");
-  res.header(
-    "Access-Control-Allow-Headers",
-    "Origin, X-Requested-With, Content-Type, Accept, Authorization"
-  );
-  next();
-});
 app.use(express.json());
-app.use(morgan("tiny"));
-
-app.disable("x-powered-by");
+app.use(morgan("tiny")); // Specify the log format for morgan
 
 const port = 8000;
 
 // Basic GET route
 app.get("/", (req, res) => {
-  res.status(200).json("Welcome to the CORS-enabled 9hhhhhhhhhhhhhh server");
+  res.status(200).json("Welcome to the CORS-enabled server");
 });
 
 // API routes
