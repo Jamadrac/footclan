@@ -5,8 +5,8 @@
     {
       "src": "/(.*)",
       "dest": "/server.js",
-      "methods": [" GET ", "HEAD", "PUT", "PATCH", "POST", "DELETE", "OPTIONS"],
-      "headers": { "Control-Allow-Origin": "*" }
+      "methods": ["GET", "HEAD", "PUT", "PATCH", "POST", "DELETE", "OPTIONS"],
+      "headers": { "Access-Control-Allow-Origin": "*" }
     }
   ]
 }
