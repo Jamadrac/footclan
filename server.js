@@ -2,18 +2,10 @@ import express from "express";
 import morgan from "morgan";
 import connect from "./database/conn.js";
 import router from "./router/route.js";
+import cors from "cors";
 
 const app = express();
-
-app.use((_req, res, next) => {
-  res.header("Access-Control-Allow-Origin", "*");
-  res.header("Access-Control-Allow-Methods", "*");
-  res.header(
-    "Access-Control-Allow-Headers",
-    "Origin, X-Requested-With, Content-Type, Accept, Authorization"
-  );
-  next();
-});
+app.use(cors());
 
 app.use(express.json());
 app.use(morgan("tiny"));
