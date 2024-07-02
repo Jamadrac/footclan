@@ -5,7 +5,13 @@ import router from "./router/route.js";
 import cors from "cors";
 
 const app = express();
-app.use(cors());
+const corsOptions = {
+  origin: "*",
+  credentials: true,
+  optionSuccessStatus: 200,
+};
+
+app.use(cors(corsOptions));
 
 app.use(express.json());
 app.use(morgan("tiny"));
@@ -16,7 +22,7 @@ const port = 8000;
 
 // Basic GET route
 app.get("/", (req, res) => {
-  res.status(200).json("the lord has brought it to no cors with tro insults ");
+  res.status(200).json("the lord has brought it to no cors with tro stuck ");
 });
 
 // API routes
