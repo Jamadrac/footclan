@@ -6,7 +6,7 @@ import cors from "cors";
 
 const app = express();
 const corsOptions = {
-  origin: "*",
+  origin: "http://localhost:5173",
   credentials: true,
   optionSuccessStatus: 200,
 };
@@ -22,7 +22,7 @@ const port = 8000;
 
 // Basic GET route
 app.get("/", (req, res) => {
-  res.status(200).json("the lord has brought it to no cors with tro stuck ");
+  res.status(200).json("the lord has brought it to no cors with xx 2");
 });
 
 // API routes
