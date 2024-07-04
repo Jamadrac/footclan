@@ -6,7 +6,7 @@ import cors from "cors";
 
 const app = express();
 const corsOptions = {
-  origin: "http://127.0.0.1:5173",
+  origin: "https://webserver-five.vercel.app",
   credentials: true,
   optionSuccessStatus: 200,
 };
