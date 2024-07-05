@@ -5,13 +5,8 @@ import router from "./router/route.js";
 import cors from "cors";
 
 const app = express();
-const corsOptions = {
-  origin: "*",
-  credentials: true,
-  optionsSuccessStatus: 200, // Corrected typo here
-};
 
-app.use(cors(corsOptions));
+app.use(cors());
 
 app.use(express.json());
 app.use(morgan("tiny"));
@@ -22,7 +17,7 @@ const port = 8000;
 
 // Basic GET route
 app.get("/", (req, res) => {
-  res.status(200).json(" xx 6");
+  res.status(200).json(" xx 8");
 });
 
 // API routes
