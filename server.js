@@ -8,7 +8,7 @@ const app = express();
 const corsOptions = {
   origin: "https://webserver-five.vercel.app",
   credentials: true,
-  optionSuccessStatus: 200,
+  optionsSuccessStatus: 200, // Corrected typo here
 };
 
 app.use(cors(corsOptions));
@@ -22,7 +22,7 @@ const port = 8000;
 
 // Basic GET route
 app.get("/", (req, res) => {
-  res.status(200).json(" xx 3");
+  res.status(200).json(" xx 4");
 });
 
 // API routes
