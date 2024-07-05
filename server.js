@@ -6,7 +6,24 @@ import cors from "cors";
 
 const app = express();
 
-app.use(cors());
+const allowedOrigins = [
+  "https://webserver-five.vercel.app",
+  "https://webserver-git-youi-jamadracs-projects.vercel.app",
+];
+
+const corsOptions = {
+  origin: (origin, callback) => {
+    if (allowedOrigins.includes(origin) || !origin) {
+      callback(null, true);
+    } else {
+      callback(new Error("Not allowed by CORS"));
+    }
+  },
+  credentials: true,
+  optionsSuccessStatus: 200,
+};
+
+app.use(cors(corsOptions));
 
 app.use(express.json());
 app.use(morgan("tiny"));
