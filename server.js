@@ -5,26 +5,10 @@ import router from "./router/route.js";
 import cors from "cors";
 
 const app = express();
-
 const corsOptions = {
-  origin: (origin, callback) => {
-    // Allow requests with no origin (like mobile apps or curl requests)
-    if (!origin) return callback(null, true);
-
-    // Allow specific origins
-    const allowedOrigins = [
-      "https://webserver-five.vercel.app",
-      "https://webserver-git-youi-jamadracs-projects.vercel.app",
-    ];
-
-    if (allowedOrigins.includes(origin)) {
-      callback(null, true);
-    } else {
-      callback(new Error("Not allowed by CORS"));
-    }
-  },
+  origin: "*",
   credentials: true,
-  optionsSuccessStatus: 200,
+  optionsSuccessStatus: 200, // Corrected typo here
 };
 
 app.use(cors(corsOptions));
@@ -38,7 +22,7 @@ const port = 8000;
 
 // Basic GET route
 app.get("/", (req, res) => {
-  res.status(200).json(" xx 5");
+  res.status(200).json(" xx 6");
 });
 
 // API routes
