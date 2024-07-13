@@ -7,13 +7,14 @@ import cors from "cors";
 const app = express();
 
 // Allow all origins
-app.use(cors({
-  origin: ['https://webserver-git-youi-jamadracs-projects.vercel.app', 'https://localhost', '*'],
-  allowedHeaders: ['Access-Control-Allow-Origin', 'Content-Type', 'Authorization'],
-  methods: 'GET, HEAD, PUT, PATCH, POST, DELETE',
-  preflightContinue:false
-}));
+// app.use(cors({
+//   origin: ['*','https://webserver-git-youi-jamadracs-projects.vercel.app', 'https://localhost', '*'],
+//   allowedHeaders: ['Access-Control-Allow-Origin', 'Content-Type', 'Authorization'],
+//   methods: 'GET, HEAD, PUT, PATCH, POST, DELETE',
+//   preflightContinue:false
+// }));
 
+app.use(cors())
 app.use(express.json());
 app.use(morgan("tiny"));
 
