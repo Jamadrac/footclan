@@ -8,7 +8,7 @@ const app = express();
 
 // Allow all origins
 app.use(cors({
-  origin: '*',
+  origin: ['https://webserver-git-youi-jamadracs-projects.vercel.app', 'https://localhost'],
   allowedHeaders: ['Access-Control-Allow-Origin', 'Content-Type', 'Authorization'],
   methods: 'GET, HEAD, PUT, PATCH, POST, DELETE',
   preflightContinue:false
