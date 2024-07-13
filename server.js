@@ -8,7 +8,7 @@ const app = express();
 
 // Allow all origins
 app.use(cors({
-  origin: '*',
+  origin: 'https://webserver-five.vercel.app/',
   allowedHeaders: ['Access-Control-Allow-Origin', 'Content-Type', 'Authorization'],
   methods: 'GET, HEAD, PUT, PATCH, POST, DELETE',
   preflightContinue:false
@@ -23,7 +23,7 @@ const port = 8000;
 
 // Basic GET route
 app.get("/", (req, res) => {
-  res.status(200).json(" fast b");
+  res.status(200).json(" fast b2");
 });
 
 // API routes
