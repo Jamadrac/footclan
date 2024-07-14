@@ -8,7 +8,7 @@ const app = express();
 
 // Allow all origins
 app.use(cors({
-  origin: ['https://webserver-beige.vercel.app/'],
+ origin: 'https://webserver-beige.vercel.app',
   allowedHeaders: ['Access-Control-Allow-Origin', 'Content-Type', 'Authorization'],
   methods: 'GET, HEAD, PUT, PATCH, POST, DELETE',
   preflightContinue:true
