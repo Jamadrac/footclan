@@ -11,7 +11,7 @@ app.use(cors({
   origin: ['*'],
   allowedHeaders: ['Access-Control-Allow-Origin', 'Content-Type', 'Authorization'],
   methods: 'GET, HEAD, PUT, PATCH, POST, DELETE',
-  preflightContinue:false
+  preflightContinue:true
 }));
 
 // app.use(cors())
@@ -24,7 +24,7 @@ const port = 8000;
 
 // Basic GET route
 app.get("/", (req, res) => {
-  res.status(200).json(" fast b*");
+  res.status(200).json(" aes*");
 });
 
 // API routes
