@@ -6,12 +6,14 @@ import allowCors from "./allowCors.js";
 
 const app = express();
 
-// Wrap the entire application with the CORS middleware
-app.use((req, res, next) => allowCors((req, res) => next())(req, res));
+// Use allowCors middleware for all routes
+app.use(allowCors((req, res, next) => {
+  next();
+}));
 
 // Other middleware
 app.use(express.json());
-// app.use(morgan("tiny"));
+app.use(morgan("tiny"));
 
 const port = 8000;
 
