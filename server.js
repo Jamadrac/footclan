@@ -24,7 +24,7 @@ const port = 8000;
 
 // Basic GET route
 app.get("/", (req, res) => {
-  res.status(200).json(" aes*t");
+  res.status(200).json(" aaaa");
 });
 
 // API routes
