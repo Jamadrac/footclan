@@ -7,24 +7,22 @@ import cors from "cors";
 const app = express();
 
 // Allow all origins
-app.use(cors({
- origin: 'https://webserver-beige.vercel.app',
-  allowedHeaders: ['Access-Control-Allow-Origin', 'Content-Type', 'Authorization'],
-  methods: 'GET, HEAD, PUT, PATCH, POST, DELETE',
-  preflightContinue:true
-}));
+// app.use(cors({
+//  origin: 'https://webserver-beige.vercel.app/',
+//   allowedHeaders: ['Access-Control-Allow-Origin', 'Content-Type', 'Authorization'],
+//   methods: 'GET, HEAD, PUT, PATCH, POST, DELETE',
+//   preflightContinue:true
+// }));
 
-// app.use(cors())
+app.use(cors())
 app.use(express.json());
 app.use(morgan("tiny"));
-
-app.disable("x-powered-by");
 
 const port = 8000;
 
 // Basic GET route
 app.get("/", (req, res) => {
-  res.status(200).json(" aaaa");
+  res.status(200).json(" assssssssssssssssssssssssssssssssssss");
 });
 
 // API routes
