@@ -14,6 +14,7 @@ app.use(allowCors((req, res, next) => {
 // Other middleware
 app.use(express.json());
 app.use(morgan("tiny"));
+// app.use(cors())
 
 const port = 8000;
 
