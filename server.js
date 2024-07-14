@@ -10,7 +10,7 @@ const app = express();
 app.use((req, res, next) => allowCors((req, res) => next())(req, res));
 
 // Other middleware
-// app.use(express.json());
+app.use(express.json());
 // app.use(morgan("tiny"));
 
 const port = 8000;
