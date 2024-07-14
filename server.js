@@ -7,14 +7,14 @@ import cors from "cors";
 const app = express();
 
 // Allow all origins
-// app.use(cors({
-//   origin: ['*'],
-//   allowedHeaders: ['Access-Control-Allow-Origin', 'Content-Type', 'Authorization'],
-//   methods: 'GET, HEAD, PUT, PATCH, POST, DELETE',
-//   preflightContinue:true
-// }));
+app.use(cors({
+  origin: ['https://webserver-beige.vercel.app/'],
+  allowedHeaders: ['Access-Control-Allow-Origin', 'Content-Type', 'Authorization'],
+  methods: 'GET, HEAD, PUT, PATCH, POST, DELETE',
+  preflightContinue:true
+}));
 
-app.use(cors())
+// app.use(cors())
 app.use(express.json());
 app.use(morgan("tiny"));
 
