@@ -2,20 +2,16 @@ import express from "express";
 import morgan from "morgan";
 import connect from "./database/conn.js";
 import router from "./router/route.js";
-import cors from "cors"
-// import allowCors from "./allowCors.js";
+import cors from "cors";
 
 const app = express();
-
-// Use allowCors middleware for all routes
-// app.use(allowCors((req, res, next) => {
-//   next();
-// }));
 
 // Other middleware
 app.use(express.json());
 app.use(morgan("tiny"));
-app.use(cors())
+
+// Allow all CORS requests
+app.use(cors());
 
 const port = 8000;
 
