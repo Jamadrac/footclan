@@ -2,6 +2,7 @@ import express from "express";
 import morgan from "morgan";
 import connect from "./database/conn.js";
 import router from "./router/route.js";
+import gpsRouter from "./router/gpsRouter.js";
 import cors from "cors";
 
 const app = express();
@@ -27,6 +28,7 @@ app.get("/", (req, res) => {
 
 // API routes
 app.use("/api", router);
+app.use('/gps', gpsRouter);
 
 // Start the server
 const server = app.listen(port, () => {
