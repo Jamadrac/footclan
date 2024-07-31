@@ -1,6 +1,6 @@
 import mongoose from "mongoose";
 
-export const UserSchema = new mongoose.Schema({
+const UserSchema = new mongoose.Schema({
     username: {
         type: String,
         required: [true, "Please provide a unique Username"],
@@ -20,8 +20,8 @@ export const UserSchema = new mongoose.Schema({
     lastName: { type: String },
     mobile: { type: Number },
     address: { type: String },
-    profile: { type: String }
+    profile: { type: String },
+    gpsModules: [{ type: mongoose.Schema.Types.ObjectId, ref: 'GPSModule' }]
 });
 
-// Export the model with the correct syntax s
 export default mongoose.model('User', UserSchema);

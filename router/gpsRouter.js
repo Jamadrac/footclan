@@ -1,60 +1,100 @@
-// gpsRouter.js
 import express from 'express';
-import Tracker from './models/Tracker.js';
+import User from '../model/User_model.js';
+import GPSModule from '../model/gps_model.js';
 
-const gpsRouter = express.Router();
+const router = express.Router();
 
-// Endpoint to update tracker location
-gpsRouter.post('/update', async (req, res) => {
+// Endpoint to add a GPS module to a user
+router.post('/add-tracker', async (req, res) => {
+    try {
+        const { userId, trackerId, latitude, longitude } = req.body;
+        
+        // Create new GPS module
+        const gpsModule = new GPSModule({
+            trackerId,
+            latitude,
+            longitude
+        });
+
+        await gpsModule.save();
+
+        // Add GPS module to user
+        const user = await User.findById(userId);
+        user.gpsModules.push(gpsModule._id);
+        await user.save();
+
+        res.status(200).json({ message: 'GPS module added to user', gpsModule });
+    } catch (error) {
+        res.status(400).json({ error: error.message });
+    }
+});
+
+// Endpoint to update GPS module location
+router.post('/update-location', async (req, res) => {
     try {
         const { trackerId, latitude, longitude } = req.body;
 
-        let tracker = await Tracker.findOne({ trackerId });
-
-        if (tracker) {
-            tracker.latitude = latitude;
-            tracker.longitude = longitude;
-            tracker.lastUpdated = new Date();
-        } else {
-            tracker = new Tracker({ trackerId, latitude, longitude, userId: req.body.userId });
+        const gpsModule = await GPSModule.findOne({ trackerId });
+        if (!gpsModule) {
+            return res.status(404).json({ error: "Tracker not found" });
         }
 
-        await tracker.save();
+        gpsModule.latitude = latitude;
+        gpsModule.longitude = longitude;
+        gpsModule.lastUpdated = new Date();
 
-        // Respond with any commands for the tracker
-        const command = "LIGHT_LED"; // For demonstration, always send LIGHT_LED command
-        res.status(200).json({ command });
+        await gpsModule.save();
+
+        res.status(200).json({ message: 'Location updated', gpsModule });
     } catch (error) {
         res.status(400).json({ error: error.message });
     }
 });
 
-// Endpoint to get tracker locations for a user
-gpsRouter.get('/user/:userId', async (req, res) => {
+// Endpoint to fetch all GPS modules for a user
+router.get('/user/:userId', async (req, res) => {
     try {
         const { userId } = req.params;
-        const trackers = await Tracker.find({ userId });
 
-        res.status(200).json(trackers);
+        const user = await User.findById(userId).populate('gpsModules');
+        if (!user) {
+            return res.status(404).json({ error: "User not found" });
+        }
+
+        res.status(200).json(user.gpsModules);
     } catch (error) {
         res.status(400).json({ error: error.message });
     }
 });
 
-// Endpoint to get a specific tracker's location
-gpsRouter.get('/:trackerId', async (req, res) => {
+// Endpoint to fetch a specific GPS module's location
+router.get('/tracker/:trackerId', async (req, res) => {
     try {
         const { trackerId } = req.params;
-        const tracker = await Tracker.findOne({ trackerId });
 
-        if (tracker) {
-            res.status(200).json(tracker);
-        } else {
-            res.status(404).json({ error: "Tracker not found" });
+        const gpsModule = await GPSModule.findOne({ trackerId });
+        if (!gpsModule) {
+            return res.status(404).json({ error: "Tracker not found" });
         }
+
+        res.status(200).json(gpsModule);
     } catch (error) {
         res.status(400).json({ error: error.message });
     }
 });
 
-export default gpsRouter;
+// Endpoint to send command to light LED
+router.post('/send-command', async (req, res) => {
+    try {
+        const { trackerId, command } = req.body;
+
+        // Here you would implement the logic to send the command to the GPS module
+        // For example, via WebSockets or another communication method
+
+        res.status(200).json({ message: 'Command sent', command });
+    } catch (error) {
+        res.status(400).json({ error: error.message });
+    }
+});
+
+export default router;
