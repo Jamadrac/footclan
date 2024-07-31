@@ -13,11 +13,10 @@ app.use(morgan("tiny"));
 
 // Allow all CORS requests
 app.use(cors({
-  origin: ('*'),
+  origin: '*',
   methods: ['GET', 'POST', 'PUT', 'DELETE'],
   allowedHeaders: ['Content-Type', 'Authorization'],
 }));
-
 
 const port = 8000;
 
