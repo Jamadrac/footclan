@@ -92,13 +92,18 @@ export async function login(req, res) {
   try {
     UserModel.findOne({ username })
       .then((user) => {
+        if (!user) {
+          return res.status(404).send({ error: "Username not Found" });
+        }
+
         bcrypt
           .compare(password, user.password)
           .then((passwordCheck) => {
-            if (!passwordCheck)
-              return res.status(400).send({ error: "Don't have Password" });
+            if (!passwordCheck) {
+              return res.status(400).send({ error: "Password does not Match" });
+            }
 
-            // create jwt token
+            // Create JWT token
             const token = jwt.sign(
               {
                 userId: user._id,
@@ -110,14 +115,14 @@ export async function login(req, res) {
 
             return res.status(200).send({
               msg: "Login Successful...!",
-              username: user.username,
-              id: user._id,
-              firstName: user.firstName,
-              email: user.email,
-              lastName: user.lastName,
-              mobile: user.mobile,
-              address: user.address,
-              profile: user.profile,
+              username: user.username || "not updated",
+              id: user._id || "not updated",
+              firstName: user.firstName || "not updated",
+              email: user.email || "not updated",
+              lastName: user.lastName || "not updated",
+              mobile: user.mobile || "not updated",
+              address: user.address || "not updated",
+              profile: user.profile || "not updated",
               token: token,
             });
           })
