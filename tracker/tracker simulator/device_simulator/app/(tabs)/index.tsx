@@ -65,8 +65,30 @@ const GPSDevice: React.FC<GPSDeviceProps> = () => {
   );
 };
 
-const styles = StyleScript.create({
-  // ... same as before
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  inputContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginVertical: 10,
+  },
+  input: {
+    borderWidth: 1,
+    borderColor: '#ccc',
+    padding: 5,
+    marginLeft: 10,
+  },
+  locationContainer: {
+    marginVertical: 10,
+  },
+  error: {
+    color: 'red',
+    marginVertical: 10,
+  },
 });
 
 export default GPSDevice;
