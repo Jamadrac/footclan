@@ -5,12 +5,15 @@ const router = Router();
 import * as controller from "../controllers/appController.js";
 import { registerMail } from "../controllers/mailer.js";
 import Auth, { localVariables } from "../middleware/auth.js";
+import { linkGPSModule, getUserGPSModules, updateGPSModuleLocation } from '../controllers/gpsModuleController.js';
+
 
 // GPS modules
 
-// add gps 
-// remove gps 
-// get gps module 
+router.post('/link', linkGPSModule);
+router.get('/user/:userId', getUserGPSModules);
+router.patch('/update-location', updateGPSModuleLocation);
+
 
 
 

@@ -27,7 +27,7 @@ app.get("/", (req, res) => {
 
 // API routes
 app.use("/api", router);
-app.use('/gps', gpsRouter);
+
 
 // Start the server
 const server = app.listen(port, () => {
