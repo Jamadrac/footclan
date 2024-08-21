@@ -1,15 +1,17 @@
-// components/GPSDevice.tsx
 import { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, Button, TextInput } from 'react-native';
+import { View, Text, StyleSheet, Button, TextInput, ActivityIndicator } from 'react-native';
 import * as Location from 'expo-location';
 import axios from 'axios';
+import Toast from 'react-native-toast-message';
 
 interface GPSDeviceProps {}
 
 const GPSDevice: React.FC<GPSDeviceProps> = () => {
   const [serialNumber, setSerialNumber] = useState<string>('');
+  const [baseUrl, setBaseUrl] = useState<string>('');
   const [location, setLocation] = useState<Location.LocationObject | null>(null);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const [loading, setLoading] = useState<boolean>(false);
 
   useEffect(() => {
     (async () => {
@@ -25,36 +27,70 @@ const GPSDevice: React.FC<GPSDeviceProps> = () => {
   }, []);
 
   const handleUpdateLocation = async () => {
+    if (!baseUrl) {
+      setErrorMessage('Base URL is not set');
+      return;
+    }
+
+    setLoading(true); // Show loading indicator
     try {
       let location = await Location.getCurrentPositionAsync({});
       setLocation(location);
       
-      // Send the location to the backend
-      await sendLocationToBackend(serialNumber, location.coords.latitude, location.coords.longitude);
+      await sendLocationToBackend(baseUrl, serialNumber, location.coords.latitude, location.coords.longitude);
     } catch (error) {
       console.error(error);
       setErrorMessage('Error updating location');
+      Toast.show({
+        type: 'error',
+        position: 'top',
+        text1: 'Error',
+        text2: 'Failed to update location.',
+      });
+    } finally {
+      setLoading(false); // Hide loading indicator
     }
   };
 
-  const sendLocationToBackend = async (serialNumber: string, latitude: number, longitude: number) => {
+  const sendLocationToBackend = async (baseUrl: string, serialNumber: string, latitude: number, longitude: number) => {
     try {
-      const response = await axios.post('http://your-backend-url/api/gps/update-location', {
+      const response = await axios.post(`${baseUrl}/api/gps/update-location`, {
         serialNumber,
         latitude,
         longitude,
       });
 
       console.log('Location updated successfully:', response.data.message);
+      Toast.show({
+        type: 'success',
+        position: 'top',
+        text1: 'Success',
+        text2: 'Location updated successfully.',
+      });
     } catch (error) {
       console.error('Error sending location to backend:', error);
       setErrorMessage('Failed to send location to backend');
+      Toast.show({
+        type: 'error',
+        position: 'top',
+        text1: 'Error',
+        text2: 'Failed to send location to backend.',
+      });
     }
   };
 
   return (
     <View style={styles.container}>
       <Text>GPS Device Simulator</Text>
+      <View style={styles.inputContainer}>
+        <Text>Base URL:</Text>
+        <TextInput
+          style={styles.input}
+          onChangeText={setBaseUrl}
+          value={baseUrl}
+          placeholder="Enter base URL"
+        />
+      </View>
       <View style={styles.inputContainer}>
         <Text>Serial Number:</Text>
         <TextInput
@@ -73,6 +109,8 @@ const GPSDevice: React.FC<GPSDeviceProps> = () => {
       )}
       {errorMessage && <Text style={styles.error}>{errorMessage}</Text>}
       <Button title="Update Location" onPress={handleUpdateLocation} />
+      {loading && <ActivityIndicator size="large" color="#0000ff" style={styles.loading} />}
+      <Toast />
     </View>
   );
 };
@@ -93,6 +131,7 @@ const styles = StyleSheet.create({
     borderColor: '#ccc',
     padding: 5,
     marginLeft: 10,
+    width: 250, // Adjust width as needed
   },
   locationContainer: {
     marginVertical: 10,
@@ -100,6 +139,9 @@ const styles = StyleSheet.create({
   error: {
     color: 'red',
     marginVertical: 10,
+  },
+  loading: {
+    marginTop: 20,
   },
 });
 

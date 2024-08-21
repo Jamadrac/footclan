@@ -2,8 +2,9 @@ import express from "express";
 import morgan from "morgan";
 import connect from "./database/conn.js";
 import router from "./router/route.js";
-import gpsRouter from "./router/gpsRouter.js";
 import cors from "cors";
+import os from "os";
+import qrcode from "qrcode";
 
 const app = express();
 
@@ -27,13 +28,7 @@ app.get("/", (req, res) => {
 
 // API routes
 app.use("/api", router);
-
-
-// Start the server
-const server = app.listen(port, () => {
-  console.log(`Server running at http://localhost:${port}`);
-
-  connect()
+connect()
     .then(() => {
       console.log("Connected to database");
     })
@@ -41,9 +36,32 @@ const server = app.listen(port, () => {
       console.error("Error connecting to the database:", error);
       process.exit(1);
     });
-});
 
-// Error handling for the server startup
-server.on("error", (error) => {
-  console.error("Error starting the server:", error);
+// Start the server
+app.listen(port, "0.0.0.0", () => {
+  const networkInterfaces = os.networkInterfaces();
+  let ipAddress = "localhost";
+
+  for (const interfaceName in networkInterfaces) {
+    const interfaceInfo = networkInterfaces[interfaceName];
+    for (const address of interfaceInfo) {
+      if (address.family === "IPv4" && !address.internal) {
+        ipAddress = address.address;
+        break;
+      }
+    }
+  }
+
+  const url = `http://${ipAddress}:${port}`;
+  console.log(`Server is running at ${url}`);
+
+  // Generate QR code
+  qrcode.toString(url, { type: "terminal", width: 10 }, (err, qrCode) => {
+    if (err) {
+      console.error("Failed to generate QR code:", err);
+    } else {
+      console.log("Scan the following QR code to access the server:");
+      console.log(qrCode);
+    }
+  });
 });
