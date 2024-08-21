@@ -9,7 +9,7 @@ router.post('/add-tracker', async (req, res) => {
     try {
         const { userId, trackerId, latitude, longitude } = req.body;
         
-        // Create new GPS module
+       
         const gpsModule = new GPSModule({
             trackerId,
             latitude,
