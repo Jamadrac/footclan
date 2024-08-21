@@ -53,3 +53,29 @@ export const getUserGPSModules = async (req, res) => {
     res.status(500).json({ error: error.message });
   }
 };
+
+
+export const updateGPSModuleLocation = async (req, res) => {
+    try {
+      const { serialNumber, latitude, longitude } = req.body;
+  
+      // Find the GPS module by serial number
+      const gpsModule = await GPSModule.findOne({ serialNumber });
+      if (!gpsModule) {
+        return res.status(404).json({ error: "GPS module not found" });
+      }
+  
+      // Update the last known location
+      gpsModule.lastKnownLocation = {
+        type: 'Point',
+        coordinates: [latitude, longitude]
+      };
+  
+      // Save the updated GPS module
+      await gpsModule.save();
+  
+      res.status(200).json({ message: "GPS module location updated" });
+    } catch (error) {
+      res.status(500).json({ error: error.message });
+    }
+  };

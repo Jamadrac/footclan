@@ -27,7 +27,7 @@ const GPSDevice: React.FC<GPSDeviceProps> = () => {
     try {
       let location = await Location.getCurrentPositionAsync({});
       setLocation(location);
-      // Send the location to the backend
+      
       await sendLocationToBackend(serialNumber, location.coords.latitude, location.coords.longitude);
     } catch (error) {
       console.error(error);
