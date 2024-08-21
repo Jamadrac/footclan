@@ -2,6 +2,7 @@
 import { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, Button, TextInput } from 'react-native';
 import * as Location from 'expo-location';
+import axios from 'axios';
 
 interface GPSDeviceProps {}
 
@@ -28,6 +29,7 @@ const GPSDevice: React.FC<GPSDeviceProps> = () => {
       let location = await Location.getCurrentPositionAsync({});
       setLocation(location);
       
+      // Send the location to the backend
       await sendLocationToBackend(serialNumber, location.coords.latitude, location.coords.longitude);
     } catch (error) {
       console.error(error);
@@ -36,8 +38,18 @@ const GPSDevice: React.FC<GPSDeviceProps> = () => {
   };
 
   const sendLocationToBackend = async (serialNumber: string, latitude: number, longitude: number) => {
-    // Implement the logic to send the location to the backend
-    console.log(`Sending location for serial number ${serialNumber}: Latitude: ${latitude}, Longitude: ${longitude}`);
+    try {
+      const response = await axios.post('http://your-backend-url/api/gps/update-location', {
+        serialNumber,
+        latitude,
+        longitude,
+      });
+
+      console.log('Location updated successfully:', response.data.message);
+    } catch (error) {
+      console.error('Error sending location to backend:', error);
+      setErrorMessage('Failed to send location to backend');
+    }
   };
 
   return (
