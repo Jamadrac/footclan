@@ -56,6 +56,7 @@ const connectedDevices = new Map(); // Map of serialNumber -> socket.id
 const connectedClients = new Map(); // Map of socket.id -> device info
 
 // WebSocket connection handling
+
 io.on('connection', (socket) => {
   console.log(`Client connected: ${socket.id}`);
 
