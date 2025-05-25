@@ -1,252 +1,46 @@
+// In your route file (e.g., router.js)
 import { Router } from "express";
-const router = Router();
 
 /** import all controllers */
 import * as controller from "../controllers/appController.js";
+import {
+  getAllUsers,
+  deleteUser,
+  // requestPasswordReset,
+} from "../controllers/appController.js";
 import { registerMail } from "../controllers/mailer.js";
 import Auth, { localVariables } from "../middleware/auth.js";
-import { linkGPSModule, getUserGPSModules, updateGPSModuleLocation } from '../controllers/gpsModuleController.js';
-
-
-// GPS modules
-
-router.post('/link', linkGPSModule);
-router.get('/user/:userId', getUserGPSModules);
-router.patch('/update-location', updateGPSModuleLocation);
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-// AUTH
-/** POST Methods */
-router.route("/register").post(controller.register); // register user
-router.route("/registerMail").post(registerMail); // send the email
-router
-  .route("/authenticate")
-  .post(controller.verifyUser, (req, res) => res.end()); // authenticate user
-router.route("/login").post(controller.verifyUser, controller.login); // login in app
-
-/** GET Methods */
-router.route("/user/:username").get(controller.getUser); // user with username
-router
-  .route("/generateOTP")
-  .get(controller.verifyUser, localVariables, controller.generateOTP); // generate random OTP
-router.route("/verifyOTP").get(controller.verifyUser, controller.verifyOTP); // verify generated OTP
-router.route("/createResetSession").get(controller.createResetSession); // reset all the variables
-
-/** PUT Methods */
-router.route("/updateuser").put(Auth, controller.updateUser); // is use to update the user profile
-router
-  .route("/resetPassword")
-  .put(controller.verifyUser, controller.resetPassword); // use to reset password
+import {
+  linkGPSModule,
+  getUserGPSModules,
+  updateGPSModuleLocation,
+  deleteGPSModule,
+  getAllModules,
+} from "../controllers/gpsModuleController.js";
+
+const router = Router();
+
+// GPS modules routes
+router.post("/link", linkGPSModule);
+router.get("/myDevices/user/:userId", getUserGPSModules);
+router.patch("/update-location", updateGPSModuleLocation);
+router.delete("/gpsModule/:id", deleteGPSModule);
+router.get("/gpsModules", getAllModules);
+
+// AUTH routes
+router.route("/register").post(controller.register);
+router.route("/registerMail").post(registerMail);
+
+router.route("/login").post(controller.login);
+
+// Password Reset routes
+router.route("/request-reset-password").post(controller.requestPasswordReset);
+router.route("/reset-password").post(controller.resetPassword);
+
+// Other routes remain the same
+router.route("/user/:username").get(controller.getUser);
+router.get("/users", getAllUsers);
+router.delete("/users/:id", deleteUser);
+router.route("/updateuser").put(Auth, controller.updateUser);
 
 export default router;

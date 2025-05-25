@@ -1,4 +1,6 @@
-// models/GPSModel.js
+
+
+// gps_model.js
 import mongoose from "mongoose";
 
 const GPSModuleSchema = new mongoose.Schema({
@@ -26,7 +28,26 @@ const GPSModuleSchema = new mongoose.Schema({
   isActive: {
     type: Boolean,
     default: true
+  },
+  name: {
+    type: String,
+    default: "xox"  
+  },
+  model: {
+    type: String,
+    default: "xox"  
+  },
+  deviceName: {
+    type: String,
+    default: "xox"  
+  },
+  imageUrl: {
+    type: String,
+    default: "xox"  
   }
 }, { timestamps: true });
+
+// Add geospatial index for location queries
+GPSModuleSchema.index({ lastKnownLocation: "2dsphere" });
 
 export default mongoose.model('GPSModule', GPSModuleSchema);

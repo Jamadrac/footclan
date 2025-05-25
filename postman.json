@@ -1,0 +1,137 @@
+{
+  "info": {
+    "name": "GPS Module API",
+    "description": "Collection for testing GPS Module endpoints",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Link GPS Module",
+      "request": {
+        "method": "POST",
+        "url": "{{baseUrl}}/link",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": {
+            "userId": "user_id_here",
+            "serialNumber": "GPS001",
+            "name": "My GPS Device",
+            "model": "GPS-X1",
+            "deviceName": "Car Tracker",
+            "imageUrl": "http://example.com/image.jpg"
+          }
+        }
+      }
+    },
+    {
+      "name": "Get User's GPS Modules",
+      "request": {
+        "method": "GET",
+        "url": "{{baseUrl}}/myDevices/user/:userId",
+        "header": []
+      }
+    },
+    {
+      "name": "Update GPS Location",
+      "request": {
+        "method": "PATCH",
+        "url": "{{baseUrl}}/update-location",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": {
+            "serialNumber": "GPS001",
+            "latitude": 40.7128,
+            "longitude": -74.006
+          }
+        }
+      }
+    },
+    {
+      "name": "Delete GPS Module",
+      "request": {
+        "method": "DELETE",
+        "url": "{{baseUrl}}/gpsModule/:id",
+        "header": []
+      }
+    },
+    {
+      "name": "Get All GPS Modules",
+      "request": {
+        "method": "GET",
+        "url": "{{baseUrl}}/gpsModules",
+        "header": []
+      }
+    },
+    {
+      "name": "Get GPS Module by ID",
+      "request": {
+        "method": "GET",
+        "url": "{{baseUrl}}/gpsModule/:id",
+        "header": []
+      }
+    },
+    {
+      "name": "Update GPS Module Details",
+      "request": {
+        "method": "PATCH",
+        "url": "{{baseUrl}}/gpsModule/:id",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": {
+            "name": "Updated GPS Name",
+            "model": "GPS-X2",
+            "deviceName": "Updated Tracker",
+            "imageUrl": "http://example.com/new-image.jpg"
+          }
+        }
+      }
+    },
+    {
+      "name": "Get Nearby GPS Modules",
+      "request": {
+        "method": "GET",
+        "url": "{{baseUrl}}/nearby",
+        "header": [],
+        "query": [
+          {
+            "key": "latitude",
+            "value": "40.7128"
+          },
+          {
+            "key": "longitude",
+            "value": "-74.0060"
+          },
+          {
+            "key": "radius",
+            "value": "1000"
+          }
+        ]
+      }
+    }
+  ],
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:5000/api/gps",
+      "type": "string"
+    }
+  ]
+}
