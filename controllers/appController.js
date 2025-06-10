@@ -134,22 +134,9 @@ export async function login(req, res) {
       return res.status(404).send({ error: "Username or Email not Found" });
     }
 
-    console.log("User found:", { id: user._id, username: user.username, email: user.email });// Check password - handle both hashed and plain text passwords
-    let isValid = false;
-    
-    // First try bcrypt comparison (for hashed passwords)
-    try {
-      isValid = await bcrypt.compare(password, user.password);
-    } catch (error) {
-      // If bcrypt fails, it might be a plain text password
-      isValid = false;
-    }
-    
-    // If bcrypt returned false, also check plain text (for backwards compatibility)
-    if (!isValid) {
-      isValid = password === user.password;
-    }
-    
+    console.log("User found:", { id: user._id, username: user.username, email: user.email });// Check password
+    const isValid = await bcrypt.compare(password, user.password);
+
     if (!isValid) {
       console.log("Password mismatch:", { provided: password, stored: user.password });
       return res.status(400).send({ error: "Password does not Match" });
@@ -236,7 +223,10 @@ export async function resetPassword(req, res) {
   try {
     const { email, otp, newPassword } = req.body;
 
-    if (!email || !otp || !newPassword) {
+    // Trim whitespace from OTP
+    const trimmedOtp = otp ? otp.trim() : null;
+
+    if (!email || !trimmedOtp || !newPassword) {
       return res.status(400).send({
         error: "Email, OTP, and new password are required",
       });
@@ -257,7 +247,7 @@ export async function resetPassword(req, res) {
       return res.status(400).send({ error: "OTP has expired" });
     }
 
-    if (user.otp.code !== otp) {
+    if (user.otp.code !== trimmedOtp) { // Use trimmedOtp for comparison
       return res.status(400).send({ error: "Invalid OTP" });
     }    // Hash the new password before storing
     const saltRounds = 10;

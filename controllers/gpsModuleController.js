@@ -59,13 +59,9 @@ export const getUserGPSModules = async (req, res) => {
     // Find GPS modules directly by userId
     const gpsModules = await GPSModule.find({ user: userId }).sort({ createdAt: -1 });
 
-    if (gpsModules.length === 0) {
-      return res.status(404).json({ error: "No GPS modules found for this user" });
-    }
-
     res.status(200).json({
       count: gpsModules.length,
-      gpsModules,
+      gpsModules, // If no modules, this will be an empty array
     });
   } catch (error) {
     console.error("Error retrieving user's GPS modules:", error);
