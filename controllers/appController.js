@@ -44,12 +44,17 @@ export async function updateUser(req, res) {
     if (body.password) {
       const saltRounds = 10;
       body.password = await bcrypt.hash(body.password, saltRounds);
-    }
+    }    // Update the data and get the updated user
+    const updatedUser = await UserModel.findOneAndUpdate(
+      { _id: userId },
+      body,
+      { new: true }
+    ).select('-password');
 
-    // Update the data
-    await UserModel.updateOne({ _id: userId }, body);
-
-    return res.status(201).send({ msg: "Record Updated...!" });
+    return res.status(200).send({ 
+      msg: "Record Updated...!",
+      user: updatedUser
+    });
   } catch (error) {
     console.error("Error:", error);
 
