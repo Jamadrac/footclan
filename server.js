@@ -163,48 +163,155 @@ io.on('connection', (socket) => {
     }
   });
 
-  // Handle disconnection
-  socket.on('disconnect', () => {
-    console.log(`Client disconnected: ${socket.id}`);
-    
+  // P2P Signaling Relay Logic
+  // 1. Handle signals from Flutter device, relay to web client(s)
+  // Flutter emits: 'device-signal' with { signal: offerSdpOrCandidate, deviceId: flutterDeviceSerialNumber }
+  socket.on('device-signal', (data) => {
+    const flutterDeviceSerialNumber = data.deviceId;
+    const signalPayload = data.signal;
     const clientInfo = connectedClients.get(socket.id);
-    if (clientInfo) {
-      if (clientInfo.type === 'device') {
-        // Remove device from connected devices
-        connectedDevices.delete(clientInfo.serialNumber);
-        
-        // Notify all clients about device disconnection
-        socket.broadcast.emit('device-disconnected', { 
-          serialNumber: clientInfo.serialNumber 
-        });
-      }
-      
-      connectedClients.delete(socket.id);
+
+    if (!flutterDeviceSerialNumber || !signalPayload) {
+      console.error(`[P2P] Invalid device-signal received from ${clientInfo?.serialNumber || socket.id}:`, data);
+      return;
+    }
+
+    // Ensure the sender is the device it claims to be, if it's a registered device
+    if (clientInfo && clientInfo.type === 'device' && clientInfo.serialNumber !== flutterDeviceSerialNumber) {
+        console.error(`[P2P] device-signal from ${clientInfo.serialNumber} (socket ${socket.id}) has mismatched deviceId ${flutterDeviceSerialNumber}. Ignoring.`);
+        return;
+    }
+
+    console.log(`[P2P] Relaying 'device-signal' from Flutter device ${flutterDeviceSerialNumber} (socket ${socket.id}) to web client(s) watching it.`);
+    // Emit to all clients in the room for this device.
+    // Web clients should join 'device:<serialNumber>' room if they want to interact with that device.
+    // Event for web client: 'incoming-p2p-signal-from-device'
+    socket.to(`device:${flutterDeviceSerialNumber}`).emit('incoming-p2p-signal-from-device', {
+      signal: signalPayload,
+      fromDeviceId: flutterDeviceSerialNumber
+    });
+  });
+
+  // 2. Handle signals from web client, relay to specific Flutter device
+  // Web client emits: 'web-client-p2p-signal' with { targetDeviceId: flutterDeviceSerialNumber, signal: answerSdpOrCandidate }
+  socket.on('web-client-p2p-signal', (data) => {
+    const targetDeviceSerialNumber = data.targetDeviceId;
+    const signalPayload = data.signal;
+    const clientInfo = connectedClients.get(socket.id); // Info about the sender (web client)
+
+    if (!targetDeviceSerialNumber || !signalPayload) {
+      console.error(`[P2P] Invalid web-client-p2p-signal received from ${clientInfo?.clientId || socket.id}:`, data);
+      // Optionally notify sender: socket.emit('p2p-error', 'Invalid signal data');
+      return;
+    }
+
+    // Basic validation: ensure sender is a known client (optional, but good)
+    if (!clientInfo || clientInfo.type !== 'client') {
+        console.warn(`[P2P] web-client-p2p-signal from unknown or non-client socket ${socket.id}. Relaying anyway if target device exists.`);
+        // Depending on security requirements, you might want to return here if sender must be a registered client.
+    }
+
+    const deviceSocketId = connectedDevices.get(targetDeviceSerialNumber);
+    if (deviceSocketId) {
+      console.log(`[P2P] Relaying 'web-client-p2p-signal' from web client ${clientInfo?.clientId || socket.id} (socket ${socket.id}) to device ${targetDeviceSerialNumber} (socket ${deviceSocketId})`);
+      // Event for Flutter device: 'incoming-p2p-signal-from-web'
+      io.to(deviceSocketId).emit('incoming-p2p-signal-from-web', {
+        signal: signalPayload,
+        fromClientId: clientInfo?.clientId || socket.id // Let the device know who sent it (optional)
+      });
+    } else {
+      console.error(`[P2P] Web client ${clientInfo?.clientId || socket.id} (socket ${socket.id}) tried to send signal to offline/unknown device: ${targetDeviceSerialNumber}`);
+      // Notify the web client back that the target device is not available
+      socket.emit('p2p-target-not-found', { targetDeviceId: targetDeviceSerialNumber, message: 'Target device not connected or not found.' });
     }
   });
 
-  // Handle ping/pong for connection health
-  socket.on('ping', () => {
-    socket.emit('pong');
+  // 3. Handle 'web-ready' from web client, relay to specific Flutter device
+  // Web client emits: 'p2p-connection-ready-from-web' with { targetDeviceId: flutterDeviceSerialNumber }
+  socket.on('p2p-connection-ready-from-web', (data) => {
+    const targetDeviceSerialNumber = data.targetDeviceId;
+    const clientInfo = connectedClients.get(socket.id); // Info about the sender (web client)
+
+    if (!targetDeviceSerialNumber) {
+      console.error(`[P2P] Invalid p2p-connection-ready-from-web received from ${clientInfo?.clientId || socket.id}: Missing targetDeviceId.`, data);
+      socket.emit('p2p-error', { message: 'Missing targetDeviceId in p2p-connection-ready-from-web signal.' });
+      return;
+    }
+
+    // Basic validation: ensure sender is a known client (optional)
+    if (!clientInfo || clientInfo.type !== 'client') {
+        console.warn(`[P2P] p2p-connection-ready-from-web from unknown or non-client socket ${socket.id}. Relaying anyway if target device exists.`);
+    }
+
+    const deviceSocketId = connectedDevices.get(targetDeviceSerialNumber);
+    if (deviceSocketId) {
+      console.log(`[P2P] Relaying 'p2p-connection-ready-from-web' from web client ${clientInfo?.clientId || socket.id} (socket ${socket.id}) to device ${targetDeviceSerialNumber} (socket ${deviceSocketId})`);
+      // Event for Flutter device: 'p2p-web-client-ready'
+      io.to(deviceSocketId).emit('p2p-web-client-ready', {
+        fromClientId: clientInfo?.clientId || socket.id, // Let the device know which web client is ready
+        // You might include other relevant info from the web client if needed
+      });
+    } else {
+      console.error(`[P2P] Web client ${clientInfo?.clientId || socket.id} (socket ${socket.id}) sent p2p-connection-ready-from-web for offline/unknown device: ${targetDeviceSerialNumber}`);
+      // Notify the web client back that the target device is not available
+      socket.emit('p2p-target-not-found', { targetDeviceId: targetDeviceSerialNumber, message: 'Target device for p2p-connection-ready not connected or not found.' });
+    }
+  });
+
+  // 4. Handle 'peer-disconnect' from web client, relay to specific Flutter device
+  // Web client emits: 'p2p-disconnect-from-web' with { targetDeviceId: flutterDeviceSerialNumber, reason: 'optional_reason' }
+  socket.on('p2p-disconnect-from-web', (data) => {
+    const targetDeviceSerialNumber = data.targetDeviceId;
+    const clientInfo = connectedClients.get(socket.id); // Info about the sender (web client)
+
+    if (!targetDeviceSerialNumber) {
+      console.error(`[P2P] Invalid p2p-disconnect-from-web received from ${clientInfo?.clientId || socket.id}: Missing targetDeviceId.`, data);
+      socket.emit('p2p-error', { message: 'Missing targetDeviceId in p2p-disconnect-from-web signal.' });
+      return;
+    }
+
+    const deviceSocketId = connectedDevices.get(targetDeviceSerialNumber);
+    if (deviceSocketId) {
+      console.log(`[P2P] Relaying 'p2p-disconnect-from-web' from web client ${clientInfo?.clientId || socket.id} (socket ${socket.id}) to device ${targetDeviceSerialNumber} (socket ${deviceSocketId})`);
+      // Event for Flutter device: 'p2p-web-client-disconnected'
+      io.to(deviceSocketId).emit('p2p-web-client-disconnected', {
+        fromClientId: clientInfo?.clientId || socket.id,
+        reason: data.reason || 'No reason provided'
+      });
+    } else {
+      console.error(`[P2P] Web client ${clientInfo?.clientId || socket.id} (socket ${socket.id}) sent p2p-disconnect-from-web for offline/unknown device: ${targetDeviceSerialNumber}`);
+      // Optionally notify the web client that the target device is not available
+      socket.emit('p2p-target-not-found', { targetDeviceId: targetDeviceSerialNumber, message: 'Target device for p2p-disconnect not connected or not found.' });
+    }
+  });
+
+  // Handle client disconnect
+  socket.on('disconnect', () => {
+    console.log(`Client disconnected: ${socket.id}`);
+    
+    // Remove from connected clients map
+    connectedClients.delete(socket.id);
+    
+    // Also remove from connected devices map if it was a device
+    for (const [serialNumber, sId] of connectedDevices.entries()) {
+      if (sId === socket.id) {
+        console.log(`Removing disconnected device from registry: ${serialNumber}`);
+        connectedDevices.delete(serialNumber);
+        break;
+      }
+    }
+
+    // Notify other clients about the disconnection
+    socket.broadcast.emit('client-disconnected', { socketId: socket.id });
   });
 });
 
 // Database connection
-connect()
-  .then(() => {
-    console.log("Connected to database");
-    server.listen(port, '0.0.0.0', () => {
-      const localIP = getLocalIP();
-      console.log(`Server is running on:`);
-      console.log(`  Local:    http://localhost:${port}`);
-      console.log(`  Network:  http://${localIP}:${port}`);
-      console.log(`  WebSocket: ws://${localIP}:${port}`);
-     
-    });
-  })
-  .catch((error) => {
-    console.error("Error connecting to the database:", error);
-    process.exit(1);
-  });
+connect();
+
+// Start server
+server.listen(port, () => {
+  console.log(`Server running at http://${getLocalIP()}:${port}/`);
+});
 
 export default app;
