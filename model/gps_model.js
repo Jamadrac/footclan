@@ -29,6 +29,10 @@ const GPSModuleSchema = new mongoose.Schema({
     type: Boolean,
     default: true
   },
+  engineOn: {
+    type: Boolean,
+    default: false
+  },
   name: {
     type: String,
     default: "xox"  
@@ -44,6 +48,30 @@ const GPSModuleSchema = new mongoose.Schema({
   imageUrl: {
     type: String,
     default: "xox"  
+  },
+  speed: {
+    type: Number,
+    default: 0
+  },
+  altitude: {
+    type: Number,
+    default: 0
+  },
+  temperature: {
+    type: Number,
+    default: 0
+  },
+  humidity: {
+    type: Number,
+    default: 0
+  },
+  inLostMode: {
+    type: Boolean,
+    default: false
+  },
+  lastUpdated: {
+    type: Date,
+    default: Date.now
   }
 }, { timestamps: true });
 

@@ -231,6 +231,186 @@ export const getNearbyModules = async (req, res) => {
   }
 };
 
+// Control engine state
+export const controlEngine = async (req, res) => {
+  try {
+    const { moduleId } = req.params;
+    const { state } = req.body;
+    const { userId } = req.body;  // User ID from the authenticated session
+
+    const gpsModule = await GPSModule.findById(moduleId);
+    
+    if (!gpsModule) {
+      return res.status(404).json({ error: "GPS module not found" });
+    }
+
+    // Check if the module belongs to the user
+    if (gpsModule.user.toString() !== userId) {
+      return res.status(403).json({ error: "Unauthorized access to this GPS module" });
+    }
+
+    gpsModule.engineOn = state;
+    gpsModule.lastUpdated = new Date();
+    await gpsModule.save();
+
+    res.json({ success: true, gpsModule });
+  } catch (error) {
+    console.error("Error controlling engine:", error);
+    res.status(500).json({ error: error.message });
+  }
+};
+
+// Control power state
+export const controlPower = async (req, res) => {
+  try {
+    const { moduleId } = req.params;
+    const { state } = req.body;
+    const { userId } = req.body;
+
+    const gpsModule = await GPSModule.findById(moduleId);
+    
+    if (!gpsModule) {
+      return res.status(404).json({ error: "GPS module not found" });
+    }
+
+    // Check if the module belongs to the user
+    if (gpsModule.user.toString() !== userId) {
+      return res.status(403).json({ error: "Unauthorized access to this GPS module" });
+    }
+
+    gpsModule.isActive = state;
+    gpsModule.lastUpdated = new Date();
+    await gpsModule.save();
+
+    res.json({ success: true, gpsModule });
+  } catch (error) {
+    console.error("Error controlling power:", error);
+    res.status(500).json({ error: error.message });
+  }
+};
+
+// Trigger alarm
+export const triggerAlarm = async (req, res) => {
+  try {
+    const { moduleId } = req.params;
+    const { userId } = req.body;
+
+    const gpsModule = await GPSModule.findById(moduleId);
+    
+    if (!gpsModule) {
+      return res.status(404).json({ error: "GPS module not found" });
+    }
+
+    // Check if the module belongs to the user
+    if (gpsModule.user.toString() !== userId) {
+      return res.status(403).json({ error: "Unauthorized access to this GPS module" });
+    }
+
+    // Here you would typically integrate with real hardware
+    // For now, we'll just send a success response
+    gpsModule.lastUpdated = new Date();
+    await gpsModule.save();
+
+    res.json({ success: true, message: "Alarm triggered successfully" });
+  } catch (error) {
+    console.error("Error triggering alarm:", error);
+    res.status(500).json({ error: error.message });
+  }
+};
+
+// Activate lost mode
+export const activateLostMode = async (req, res) => {
+  try {
+    const { moduleId } = req.params;
+    const { userId } = req.body;
+
+    const gpsModule = await GPSModule.findById(moduleId);
+    
+    if (!gpsModule) {
+      return res.status(404).json({ error: "GPS module not found" });
+    }
+
+    // Check if the module belongs to the user
+    if (gpsModule.user.toString() !== userId) {
+      return res.status(403).json({ error: "Unauthorized access to this GPS module" });
+    }
+
+    gpsModule.inLostMode = true;
+    gpsModule.isActive = true;
+    gpsModule.lastUpdated = new Date();
+    await gpsModule.save();
+
+    res.json({ success: true, gpsModule });
+  } catch (error) {
+    console.error("Error activating lost mode:", error);
+    res.status(500).json({ error: error.message });
+  }
+};
+
+// Restore defaults
+export const restoreDefaults = async (req, res) => {
+  try {
+    const { moduleId } = req.params;
+    const { userId } = req.body;
+
+    const gpsModule = await GPSModule.findById(moduleId);
+    
+    if (!gpsModule) {
+      return res.status(404).json({ error: "GPS module not found" });
+    }
+
+    // Check if the module belongs to the user
+    if (gpsModule.user.toString() !== userId) {
+      return res.status(403).json({ error: "Unauthorized access to this GPS module" });
+    }
+
+    gpsModule.engineOn = false;
+    gpsModule.isActive = true;
+    gpsModule.inLostMode = false;
+    gpsModule.speed = 0;
+    gpsModule.lastUpdated = new Date();
+    await gpsModule.save();
+
+    res.json({ success: true, gpsModule });
+  } catch (error) {
+    console.error("Error restoring defaults:", error);
+    res.status(500).json({ error: error.message });
+  }
+};
+
+// Get module status with simulated data
+export const getModuleStatus = async (req, res) => {
+  try {
+    const { moduleId } = req.params;
+    const { userId } = req.body;
+
+    const gpsModule = await GPSModule.findById(moduleId);
+    
+    if (!gpsModule) {
+      return res.status(404).json({ error: "GPS module not found" });
+    }
+
+    // Check if the module belongs to the user
+    if (gpsModule.user.toString() !== userId) {
+      return res.status(403).json({ error: "Unauthorized access to this GPS module" });
+    }
+
+    // Simulate real-time data
+    gpsModule.speed = Math.random() * 100; // Random speed between 0-100
+    gpsModule.altitude = Math.random() * 1000; // Random altitude
+    gpsModule.temperature = 20 + Math.random() * 15; // Random temperature 20-35
+    gpsModule.humidity = 30 + Math.random() * 40; // Random humidity 30-70
+    gpsModule.lastUpdated = new Date();
+    
+    await gpsModule.save();
+
+    res.json(gpsModule);
+  } catch (error) {
+    console.error("Error getting module status:", error);
+    res.status(500).json({ error: error.message });
+  }
+};
+
 // // Router Configuration
 // router.post("/link", linkGPSModule);
 // router.get("/user/:userId", getUserGPSModules);
