@@ -399,28 +399,45 @@ export const restoreDefaults = async (req, res) => {
 export const getModuleStatus = async (req, res) => {
   try {
     const { moduleId } = req.params;
-    const userId = req.query.userId || req.body.userId; // Check both query and body
+    const userId = req.query.userId || req.body.userId;
+
+    // Set headers to prevent caching
+    res.set({
+      'Cache-Control': 'no-store, no-cache, must-revalidate, proxy-revalidate',
+      'Pragma': 'no-cache',
+      'Expires': '0',
+      'Surrogate-Control': 'no-store'
+    });
 
     if (!userId) {
-      return res.status(400).json({ error: "User ID is required" });
+      return res.status(400).json({ 
+        success: false, 
+        error: "User ID is required" 
+      });
     }
 
     const gpsModule = await GPSModule.findById(moduleId);
     
     if (!gpsModule) {
-      return res.status(404).json({ error: "GPS module not found" });
+      return res.status(404).json({ 
+        success: false, 
+        error: "GPS module not found" 
+      });
     }
 
     // Check if the module belongs to the user
     if (gpsModule.user.toString() !== userId) {
-      return res.status(403).json({ error: "Unauthorized access to this GPS module" });
+      return res.status(403).json({ 
+        success: false, 
+        error: "Unauthorized access to this GPS module" 
+      });
     }
 
     // Calculate online status based on last update time
     const lastUpdateTime = gpsModule.lastUpdated || gpsModule.updatedAt;
     const isOnline = lastUpdateTime && (new Date() - new Date(lastUpdateTime)) < 5 * 60 * 1000; // 5 minutes threshold
 
-    // Mock signal strength calculation (replace with real logic)
+    // Calculate signal strength
     let signalStrength = "unknown";
     if (isOnline) {
       const lastLocation = gpsModule.lastKnownLocation;
@@ -433,10 +450,11 @@ export const getModuleStatus = async (req, res) => {
       }
     }
 
+    // Ensure we're sending all required status fields
     const status = {
       isOnline,
       engineOn: gpsModule.engineStatus === 'on',
-      isActive: gpsModule.powerControl,
+      isActive: gpsModule.powerControl || false,
       alarmActive: gpsModule.alarmControl || false,
       lostModeActive: gpsModule.lostModeControl || false,
       batteryLevel: gpsModule.lastKnownLocation?.batteryLevel || "unknown",
@@ -444,13 +462,25 @@ export const getModuleStatus = async (req, res) => {
       altitude: gpsModule.lastKnownLocation?.altitude || 0,
       signalStrength,
       lastUpdated: lastUpdateTime,
-      errorState: gpsModule.errorState || null
+      errorState: gpsModule.errorState || null,
+      moduleId: gpsModule._id, // Include the module ID for verification
+      timestamp: new Date().toISOString() // Include current timestamp
     };
 
-    res.json({ success: true, status });
+    // Send the response with explicit success flag
+    return res.status(200).json({
+      success: true,
+      status,
+      timestamp: new Date().toISOString()
+    });
+
   } catch (error) {
     console.error("Error getting module status:", error);
-    res.status(500).json({ error: error.message });
+    return res.status(500).json({
+      success: false,
+      error: error.message || "Internal server error",
+      timestamp: new Date().toISOString()
+    });
   }
 };
 
