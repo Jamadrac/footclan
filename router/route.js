@@ -23,8 +23,20 @@ import {
   restoreDefaults,
   getModuleStatus,
 } from "../controllers/gpsModuleController.js";
+import {
+  getMembers,
+  addMember,
+  removeMember,
+  updateMemberPermissions,
+} from "../controllers/memberController.js";
 
 const router = Router();
+
+// Member management routes
+router.get("/members", getMembers);
+router.post("/members/add", addMember);
+router.delete("/members/:memberId", removeMember);
+router.patch("/members/:memberId/permissions", updateMemberPermissions);
 
 // GPS modules routes
 router.post("/link", linkGPSModule);
@@ -38,8 +50,7 @@ router.post("/module/:moduleId/engine", controlEngine);
 router.post("/module/:moduleId/power", controlPower);
 router.post("/module/:moduleId/alarm", triggerAlarm);
 router.post("/module/:moduleId/lost-mode", activateLostMode);
-router.post("/module/:moduleId/restore", restoreDefaults);
-router.get("/module/:moduleId/status", getModuleStatus);
+router.get("/module/:moduleId/status", getModuleStatus); // New status endpoint
 
 // AUTH routes
 router.route("/register").post(controller.register);

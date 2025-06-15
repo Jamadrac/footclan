@@ -13,8 +13,7 @@ const GPSModuleSchema = new mongoose.Schema({
     type: mongoose.Schema.Types.ObjectId,
     ref: 'User',
     required: true
-  },
-  lastKnownLocation: {
+  },  lastKnownLocation: {
     type: {
       type: String,
       enum: ['Point'],
@@ -23,7 +22,40 @@ const GPSModuleSchema = new mongoose.Schema({
     coordinates: {
       type: [Number],
       default: [0, 0]
+    },
+    timestamp: {
+      type: Date,
+      default: Date.now
+    },
+    speed: {
+      type: Number,
+      default: 0
+    },
+    batteryLevel: {
+      type: Number,
+      default: 100
+    },
+    engineStatus: {
+      type: String,
+      enum: ['on', 'off'],
+      default: 'off'
     }
+  },
+  engineControl: {
+    type: Boolean,
+    default: false
+  },
+  powerControl: {
+    type: Boolean,
+    default: false
+  },
+  alarmStatus: {
+    type: Boolean,
+    default: false
+  },
+  lostMode: {
+    type: Boolean,
+    default: false
   },
   isActive: {
     type: Boolean,

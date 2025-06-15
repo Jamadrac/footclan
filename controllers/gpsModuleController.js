@@ -72,7 +72,7 @@ export const getUserGPSModules = async (req, res) => {
 // Update GPS Module Location
 export const updateGPSModuleLocation = async (req, res) => {
   try {
-    const { serialNumber, latitude, longitude } = req.body;
+    const { serialNumber, latitude, longitude, speed, batteryLevel, engineStatus } = req.body;
 
     if (latitude < -90 || latitude > 90 || longitude < -180 || longitude > 180) {
       return res.status(400).json({
@@ -85,9 +85,20 @@ export const updateGPSModuleLocation = async (req, res) => {
       return res.status(404).json({ error: "GPS module not found" });
     }
 
+    // Update location and additional information
     gpsModule.lastKnownLocation = {
       type: "Point",
       coordinates: [longitude, latitude],
+      timestamp: new Date(),
+      speed: speed || 0,
+      batteryLevel: batteryLevel || 0,
+      engineStatus: engineStatus || 'off',
+      controls: {
+        engineControl: gpsModule.engineControl || false,
+        powerControl: gpsModule.powerControl || false,
+        alarmStatus: gpsModule.alarmStatus || false,
+        lostMode: gpsModule.lostMode || false
+      }
     };
 
     await gpsModule.save();
@@ -95,6 +106,12 @@ export const updateGPSModuleLocation = async (req, res) => {
     res.status(200).json({
       message: "GPS module location updated",
       location: gpsModule.lastKnownLocation,
+      controls: {
+        engineControl: gpsModule.engineControl || false,
+        powerControl: gpsModule.powerControl || false,
+        alarmStatus: gpsModule.alarmStatus || false,
+        lostMode: gpsModule.lostMode || false
+      }
     });
   } catch (error) {
     console.error("Error updating GPS module location:", error);
@@ -378,11 +395,15 @@ export const restoreDefaults = async (req, res) => {
   }
 };
 
-// Get module status with simulated data
+// Get module status
 export const getModuleStatus = async (req, res) => {
   try {
     const { moduleId } = req.params;
-    const { userId } = req.body;
+    const userId = req.query.userId || req.body.userId; // Check both query and body
+
+    if (!userId) {
+      return res.status(400).json({ error: "User ID is required" });
+    }
 
     const gpsModule = await GPSModule.findById(moduleId);
     
@@ -395,16 +416,38 @@ export const getModuleStatus = async (req, res) => {
       return res.status(403).json({ error: "Unauthorized access to this GPS module" });
     }
 
-    // Simulate real-time data
-    gpsModule.speed = Math.random() * 100; // Random speed between 0-100
-    gpsModule.altitude = Math.random() * 1000; // Random altitude
-    gpsModule.temperature = 20 + Math.random() * 15; // Random temperature 20-35
-    gpsModule.humidity = 30 + Math.random() * 40; // Random humidity 30-70
-    gpsModule.lastUpdated = new Date();
-    
-    await gpsModule.save();
+    // Calculate online status based on last update time
+    const lastUpdateTime = gpsModule.lastUpdated || gpsModule.updatedAt;
+    const isOnline = lastUpdateTime && (new Date() - new Date(lastUpdateTime)) < 5 * 60 * 1000; // 5 minutes threshold
 
-    res.json(gpsModule);
+    // Mock signal strength calculation (replace with real logic)
+    let signalStrength = "unknown";
+    if (isOnline) {
+      const lastLocation = gpsModule.lastKnownLocation;
+      if (lastLocation && lastLocation.coordinates) {
+        const accuracy = lastLocation.accuracy || 10;
+        if (accuracy < 5) signalStrength = "excellent";
+        else if (accuracy < 10) signalStrength = "good";
+        else if (accuracy < 20) signalStrength = "fair";
+        else signalStrength = "poor";
+      }
+    }
+
+    const status = {
+      isOnline,
+      engineOn: gpsModule.engineStatus === 'on',
+      isActive: gpsModule.powerControl,
+      alarmActive: gpsModule.alarmControl || false,
+      lostModeActive: gpsModule.lostModeControl || false,
+      batteryLevel: gpsModule.lastKnownLocation?.batteryLevel || "unknown",
+      speed: gpsModule.lastKnownLocation?.speed || 0,
+      altitude: gpsModule.lastKnownLocation?.altitude || 0,
+      signalStrength,
+      lastUpdated: lastUpdateTime,
+      errorState: gpsModule.errorState || null
+    };
+
+    res.json({ success: true, status });
   } catch (error) {
     console.error("Error getting module status:", error);
     res.status(500).json({ error: error.message });
