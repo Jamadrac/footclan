@@ -38,6 +38,15 @@ router.post("/members/add", addMember);
 router.delete("/members/:memberId", removeMember);
 router.patch("/members/:memberId/permissions", updateMemberPermissions);
 
+// Users routes
+router.route("/users")
+  .get(getAllUsers)
+  .post(controller.register);
+
+router.route("/users/:userId")
+  .put(controller.updateUser)
+  .delete(controller.deleteUser);
+
 // GPS modules routes
 router.post("/link", linkGPSModule);
 router.get("/myDevices/user/:userId", getUserGPSModules);

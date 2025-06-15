@@ -29,13 +29,13 @@ export async function getUser(req, res) {
   }
 }
 
-/** PUT: http://localhost:8000/api/updateuser */
+/** PUT: http://localhost:8000/api/users/:userId */
 export async function updateUser(req, res) {
   try {
-    const { userId } = req.user;
+    const { userId } = req.params;
 
     if (!userId) {
-      return res.status(401).send({ error: "User Not Found...!" });
+      return res.status(400).send({ error: "User ID is required" });
     }
 
     const body = req.body;
@@ -44,9 +44,14 @@ export async function updateUser(req, res) {
     if (body.password) {
       const saltRounds = 10;
       body.password = await bcrypt.hash(body.password, saltRounds);
-    }    // Update the data and get the updated user
-    const updatedUser = await UserModel.findOneAndUpdate(
-      { _id: userId },
+    }    // Update the data and get the updated user    // Check if user exists
+    const existingUser = await UserModel.findById(userId);
+    if (!existingUser) {
+      return res.status(404).send({ error: "User not found" });
+    }
+
+    const updatedUser = await UserModel.findByIdAndUpdate(
+      userId,
       body,
       { new: true }
     ).select('-password');
@@ -157,8 +162,7 @@ export async function login(req, res) {
       { expiresIn: "72h" }
     );
 
-    return res.status(200).send({
-      msg: "Login Successful...!",
+    return res.status(200).send({      msg: "Login Successful...!",
       username: user.username || "not updated",
       id: user._id || "not updated",
       firstName: user.firstName || "not updated",
@@ -167,6 +171,7 @@ export async function login(req, res) {
       mobile: user.mobile || "not updated",
       address: user.address || "not updated",
       profile: user.profile || "not updated",
+      role: user.role || "user",
       token: token,
     });
   } catch (error) {
@@ -283,13 +288,15 @@ export async function resetPassword(req, res) {
   }
 }
 
+/** GET: http://localhost:8000/api/users */
 export async function getAllUsers(req, res) {
   try {
-    const users = await UserModel.find({}, "-password"); // Exclude password field
-    res.status(200).json({ users });
+    const users = await UserModel.find({}).select('-password'); // Exclude password field
+    console.log('Found users:', users); // Debug log
+    return res.status(200).json(users);
   } catch (error) {
-    console.error("Error fetching users:", error);
-    res.status(500).json({ error: "Error fetching users" });
+    console.error("Error in getAllUsers:", error);
+    return res.status(500).json({ error: "Internal Server Error" });
   }
 }
 

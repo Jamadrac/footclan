@@ -19,9 +19,12 @@ const UserSchema = new mongoose.Schema({
   firstName: { type: String },
   lastName: { type: String },
   mobile: { type: String },
-  address: { type: String },
-  profile: { type: String },
-  
+  address: { type: String },  profile: { type: String },
+  role: { 
+    type: String, 
+    enum: ['user', 'admin', 'manager'],
+    default: 'user'
+  },
   otp: {
     code: String,
     expiresAt: Date,
